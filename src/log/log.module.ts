@@ -5,28 +5,24 @@ import { LogService } from './log.service';
 import { MongodriverModule } from '../mongodriver/mongodriver.module';
 import { PgsqldriverModule } from '../pgsqldriver/pgsqldriver.module';
 
-@Module({
-  imports: [],
-  providers: [LogService],
-  exports: [LogService],
-})
+@Module({})
 export class LogModule {
-  static start(connectionType): DynamicModule {
-    let module: DynamicModule;
+  static forRoot(dbType: 'mongo' | 'pgsql'): DynamicModule {
+    let driverModule;
 
-    if (connectionType === 'mongo') {
-      module = {
-        module: MongodriverModule,
-      };
-    } else if (connectionType === 'pgsql') {
-      module = {
-        module: PgsqldriverModule,
-      };
+    if (dbType === 'mongo') {
+      driverModule = MongodriverModule;
+    } else if (dbType === 'pgsql') {
+      driverModule = PgsqldriverModule;
+    } else {
+      throw new Error(`Unsupported dbType: ${dbType}`);
     }
 
     return {
       module: LogModule,
-      imports: [module],
+      imports: [driverModule],
+      providers: [LogService],
+      exports: [LogService],
     };
   }
 }
