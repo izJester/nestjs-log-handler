@@ -4,3 +4,7 @@ export interface Content {
     originalUrl: string;
     ip: string;
 }
+
+export interface Log {
+  content: Content;
+}
